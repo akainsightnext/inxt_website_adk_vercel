@@ -109,6 +109,30 @@ export function useSession(): UseSessionReturn {
     }
   }, []);
 
+  // Auto-create session on component mount
+  useEffect(() => {
+    const autoCreateSession = async () => {
+      // Generate a default user ID if none exists
+      const defaultUserId = userId || `user-${Date.now()}`;
+      
+      if (!userId) {
+        setUserId(defaultUserId);
+      }
+      
+      // Create session if we don't have one
+      if (!sessionId && defaultUserId) {
+        try {
+          console.log("🔄 Auto-creating session for user:", defaultUserId);
+          await handleCreateNewSession(defaultUserId);
+        } catch (error) {
+          console.error("❌ Failed to auto-create session:", error);
+        }
+      }
+    };
+
+    autoCreateSession();
+  }, [userId, sessionId, handleCreateNewSession]);
+
   return {
     // State
     sessionId,

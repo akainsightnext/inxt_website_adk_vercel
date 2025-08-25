@@ -2,7 +2,6 @@
 
 import { Bot } from "lucide-react";
 import { UserIdInput } from "@/components/chat/UserIdInput";
-import { SessionSelector } from "@/components/chat/SessionSelector";
 import { useChatContext } from "@/components/chat/ChatProvider";
 
 /**
@@ -16,8 +15,6 @@ export function ChatHeader(): React.JSX.Element {
     sessionId,
     handleUserIdChange,
     handleUserIdConfirm,
-    handleSessionSwitch,
-    handleCreateNewSession,
   } = useChatContext();
 
   return (
@@ -30,32 +27,28 @@ export function ChatHeader(): React.JSX.Element {
           </div>
           <div>
             <h1 className="text-lg font-semibold text-slate-100">
-              Goal Planning Assistant
+              AI Chat Assistant
             </h1>
-            <p className="text-xs text-slate-400">Powered by Google Gemini</p>
+            <p className="text-xs text-slate-400">Auto-session enabled • Powered by Vertex AI</p>
           </div>
         </div>
 
-        {/* Right side - User controls */}
+        {/* Right side - User controls (simplified for auto-session) */}
         <div className="flex items-center gap-4">
-          {/* User ID Management */}
+          {/* Show session status */}
+          {sessionId && (
+            <div className="text-xs text-slate-400">
+              Session: {sessionId.slice(-8)}...
+            </div>
+          )}
+          
+          {/* Optional: Keep user ID input for customization */}
           <UserIdInput
             currentUserId={userId}
             onUserIdChange={handleUserIdChange}
             onUserIdConfirm={handleUserIdConfirm}
             className="text-xs"
           />
-
-          {/* Session Management */}
-          {userId && (
-            <SessionSelector
-              currentUserId={userId}
-              currentSessionId={sessionId}
-              onSessionSelect={handleSessionSwitch}
-              onCreateSession={handleCreateNewSession}
-              className="text-xs"
-            />
-          )}
         </div>
       </div>
     </div>

@@ -2,6 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force AI message text to be black */
+.ai-message-text,
+.ai-message-text *,
+.prose.ai-message-text,
+.prose.ai-message-text *,
+.prose.ai-message-text p,
+.prose.ai-message-text div,
+.prose.ai-message-text span {
+  color: #000000 !important;
+}
+
+/* Override any prose text colors */
+.prose.ai-message-text p,
+.prose.ai-message-text div,
+.prose.ai-message-text span,
+.prose.ai-message-text strong,
+.prose.ai-message-text em,
+.prose.ai-message-text code,
+.prose.ai-message-text pre {
+  color: #000000 !important;
+}
+
+/* Force all text in AI message containers to be black */
+[class*="ai-message-text"] * {
+  color: #000000 !important;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

@@ -43,7 +43,7 @@ export function InputForm({
 
   const placeholderText =
     context === "chat"
-      ? "Add more details, ask questions, or request changes..."
+      ? "Ask about our services, AI solutions, or how we can help..."
       : "What goal would you like to achieve? e.g., Build a mobile app, Plan a marketing campaign, Learn a new skill...";
 
   return (
@@ -51,13 +51,12 @@ export function InputForm({
       <form onSubmit={handleSubmit} className="relative">
         <div
           className={`
-          relative flex items-end gap-3 p-3 rounded-2xl border transition-all duration-200
+          relative flex items-end gap-3 p-3 rounded-xl border transition-all duration-200
           ${
             isFocused
-              ? "border-emerald-400/50 bg-slate-800/80 shadow-lg shadow-emerald-500/10"
-              : "border-slate-700/50 bg-slate-800/50 hover:border-slate-600/50"
+              ? "border-blue-500 bg-white shadow-md shadow-blue-500/10"
+              : "border-gray-200 bg-white hover:border-gray-300"
           }
-          backdrop-blur-sm
         `}
         >
           {/* Input Area */}
@@ -72,11 +71,11 @@ export function InputForm({
               placeholder={placeholderText}
               rows={1}
               className="
-                resize-none border-0 bg-transparent text-slate-200 placeholder-slate-400
+                resize-none border-0 bg-transparent text-gray-800 placeholder-gray-500
                 focus:ring-0 focus:outline-none focus:border-0 focus:shadow-none
-                min-h-[80px] max-h-48
-                scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-600
-                px-0 py-3
+                min-h-[80px] max-h-32
+                scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300
+                px-0 py-2
               "
               style={{
                 fontSize: "16px",
@@ -89,7 +88,7 @@ export function InputForm({
 
             {/* Character count for long messages */}
             {inputValue.length > 500 && (
-              <div className="absolute bottom-1 right-1 text-xs text-slate-500 bg-slate-800/80 rounded px-1">
+              <div className="absolute bottom-1 right-1 text-xs text-gray-500 bg-white rounded px-1">
                 {inputValue.length}/2000
               </div>
             )}
@@ -101,17 +100,17 @@ export function InputForm({
             size="sm"
             disabled={!inputValue.trim() || isLoading}
             className="
-              h-9 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
-              text-white border-0 shadow-lg transition-all duration-200
+              h-9 px-4 bg-blue-600 hover:bg-blue-700
+              text-white border-0 shadow-sm transition-all duration-200
               disabled:opacity-50 disabled:cursor-not-allowed
-              disabled:bg-slate-600 disabled:from-slate-600 disabled:to-slate-600
-              flex items-center gap-2
+              disabled:bg-gray-400
+              flex items-center gap-2 rounded-lg
             "
           >
             {isLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="hidden sm:inline">Planning...</span>
+                <span className="hidden sm:inline">Thinking...</span>
               </>
             ) : (
               <>
