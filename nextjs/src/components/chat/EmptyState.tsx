@@ -52,7 +52,12 @@ export function EmptyState(): React.JSX.Element {
       <div className="max-w-sm w-full space-y-6">
         {/* Main header */}
         <div className="space-y-6">
-          <h1 className="text-2xl font-bold text-gray-900 text-center">InsightNext Assistant</h1>
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-md">
+              <Target className="w-4 h-4 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">InsightNext Assistant</h1>
+          </div>
         </div>
 
         {/* Streaming welcome message */}
