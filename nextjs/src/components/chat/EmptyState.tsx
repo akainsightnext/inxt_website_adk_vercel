@@ -32,6 +32,21 @@ export function EmptyState(): React.JSX.Element {
     setTimeout(typeText, 500);
   }, []);
 
+  // Auto-scroll during welcome message streaming
+  useEffect(() => {
+    if (isTyping) {
+      const scrollToBottom = () => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth'
+        });
+      };
+
+      const scrollInterval = setInterval(scrollToBottom, 100);
+      return () => clearInterval(scrollInterval);
+    }
+  }, [isTyping]);
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 text-center min-h-[60vh]">
       <div className="max-w-sm w-full space-y-6">

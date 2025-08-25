@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { MessageItem } from "./MessageItem";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bot, Loader2 } from "lucide-react";
@@ -24,6 +25,28 @@ export function MessageList({
   copiedMessageId,
   scrollAreaRef,
 }: MessageListProps) {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Auto-scroll when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Auto-scroll during streaming
+  useEffect(() => {
+    if (isLoading) {
+      const scrollInterval = setInterval(() => {
+        scrollToBottom();
+      }, 100); // Scroll every 100ms during streaming
+
+      return () => clearInterval(scrollInterval);
+    }
+  }, [isLoading]);
+
   // If no messages, show empty state
   if (messages.length === 0) {
     return (
@@ -69,6 +92,9 @@ export function MessageList({
               </div>
             </div>
           )}
+        
+        {/* Invisible element for auto-scrolling */}
+        <div ref={messagesEndRef} />
       </div>
     </ScrollArea>
   );
