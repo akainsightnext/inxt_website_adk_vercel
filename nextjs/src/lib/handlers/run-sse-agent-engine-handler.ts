@@ -373,14 +373,6 @@ export async function handleAgentEngineStreamRequest(
     JSON.stringify(requestData, null, 2)
   );
 
-  // Log configuration details
-  console.log("🔧 [AGENT ENGINE] Configuration check:", {
-    shouldUseAgentEngine: shouldUseAgentEngine(),
-    agentEngineUrl: getEndpointForPath("", "streamQuery"),
-    hasServiceAccountKey: !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64,
-    serviceAccountKeyLength: process.env.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64?.length || 0,
-  });
-
   try {
     // Format payload for Agent Engine
     const agentEnginePayload = formatAgentEnginePayload(requestData);
@@ -393,11 +385,6 @@ export async function handleAgentEngineStreamRequest(
 
     // Get authentication headers
     const authHeaders = await getAuthHeaders();
-    console.log("🔐 [AGENT ENGINE] Authentication headers:", {
-      hasAuthHeader: !!authHeaders.Authorization,
-      authHeaderLength: authHeaders.Authorization?.length || 0,
-      contentType: authHeaders["Content-Type"],
-    });
 
     // Forward request to Agent Engine streaming endpoint
     const response = await fetch(agentEngineUrl, {
@@ -440,16 +427,6 @@ export async function handleAgentEngineStreamRequest(
         errorDetails
       );
     }
-
-    // Log response details for debugging
-    console.log("🔍 [AGENT ENGINE] Response details:", {
-      status: response.status,
-      statusText: response.statusText,
-      contentType: response.headers.get("content-type"),
-      contentLength: response.headers.get("content-length"),
-      hasBody: !!response.body,
-      url: response.url,
-    });
 
     // Create streaming response that processes JSON fragments
     const stream = new ReadableStream({
@@ -494,19 +471,12 @@ export async function handleAgentEngineStreamRequest(
 
             const { done, value } = await reader.read();
 
-            console.log("🔍 [AGENT ENGINE] Stream read result:", {
-              done,
-              hasValue: !!value,
-              valueSize: value ? value.length : 0,
-              timestamp: new Date().toISOString(),
-            });
-
             if (value) {
               const chunk = decoder.decode(value, { stream: true });
               console.log(
                 `⏰ [STREAMING] Received chunk at ${new Date().toISOString()}, size: ${
                   chunk.length
-                } bytes, content: "${chunk.substring(0, 200)}..."`
+                } bytes`
               );
               processor.processChunk(chunk);
             }

@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { MarkdownRenderer, mdComponents } from "./MarkdownRenderer";
 
-import { Copy, CopyCheck, Loader2, Bot, User } from "lucide-react";
+import { Copy, CopyCheck, Loader2, Bot, User, Target } from "lucide-react";
 import { Message } from "@/types";
 
 interface MessageItemProps {
@@ -101,6 +101,9 @@ export function MessageItem({
   if (isLoading) {
     return (
       <div className="flex items-start max-w-[90%]">
+        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-md mr-3">
+          <Target className="w-4 h-4 text-white" />
+        </div>
         <div className="flex-1 bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
           {/* Show content if it exists while loading */}
           {message.content && (
@@ -129,6 +132,9 @@ export function MessageItem({
   if (!message.content) {
     return (
       <div className="flex items-start max-w-[90%]">
+        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-md mr-3">
+          <Target className="w-4 h-4 text-white" />
+        </div>
         <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
           <span className="text-sm text-gray-700">No content</span>
         </div>
@@ -139,6 +145,9 @@ export function MessageItem({
   // Regular AI message display with content
   return (
     <div className="flex items-start max-w-[90%]">
+      <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-md mr-3">
+        <Target className="w-4 h-4 text-white" />
+      </div>
       <div className="flex-1 bg-white border border-gray-200 rounded-xl p-4 shadow-sm relative group">
         {/* Message content */}
         <div className="prose max-w-none text-sm leading-relaxed ai-message-text" style={{ color: '#000000 !important' }}>

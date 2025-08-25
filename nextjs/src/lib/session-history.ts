@@ -254,15 +254,6 @@ export class AdkSessionService {
           },
         });
 
-        // Handle 404 for non-existent sessions gracefully
-        if (response.status === 404) {
-          console.log("⚠️ [ADK SESSION SERVICE] Session not found, returning empty events");
-          return {
-            events: [],
-            nextPageToken: undefined,
-          };
-        }
-
         if (!response.ok) {
           throw new Error(`Failed to list events: ${response.statusText}`);
         }
@@ -303,15 +294,6 @@ export class AdkSessionService {
             ...authHeaders,
           },
         });
-
-        // Handle 404 for non-existent sessions gracefully
-        if (response.status === 404) {
-          console.log("⚠️ [ADK SESSION SERVICE] Session not found, returning empty events");
-          return {
-            events: [],
-            nextPageToken: undefined,
-          };
-        }
 
         if (!response.ok) {
           throw new Error(`Failed to list events: ${response.statusText}`);

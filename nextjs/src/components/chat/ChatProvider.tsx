@@ -217,17 +217,12 @@ export function ChatProvider({
   // Load session history when session changes
   useEffect(() => {
     if (userId && sessionId) {
-      // Check if this is an external session from URL parameters
-      const isExternalSession = typeof window !== 'undefined' && 
-        new URLSearchParams(window.location.search).get('externalSession') === 'true';
-
       // Function to load session history
       const loadSessionHistory = async () => {
         try {
           console.log("🔄 [CHAT_PROVIDER] Loading session history:", {
             userId,
             sessionId,
-            isExternalSession,
           });
 
           setIsLoadingHistory(true);
@@ -261,23 +256,17 @@ export function ChatProvider({
 
             console.log("✅ [CHAT_PROVIDER] Session history applied to state");
           } else {
-            // For external sessions, don't show errors if session doesn't exist yet
-            if (isExternalSession && result.error?.includes("Failed to list events")) {
-              console.log("ℹ️ [CHAT_PROVIDER] External session has no history yet (normal for new sessions)");
-              // Don't show error toast for external sessions without history
-            } else {
-              console.warn(
-                "⚠️ [CHAT_PROVIDER] Session history loading failed:",
-                result.error
-              );
+            console.warn(
+              "⚠️ [CHAT_PROVIDER] Session history loading failed:",
+              result.error
+            );
 
-              // Show error toast to user only for non-external sessions
-              toast.error("Failed to load chat history", {
-                description:
-                  result.error ||
-                  "Could not load previous messages for this session.",
-              });
-            }
+            // Show error toast to user
+            toast.error("Failed to load chat history", {
+              description:
+                result.error ||
+                "Could not load previous messages for this session.",
+            });
           }
         } catch (error) {
           console.error(
@@ -285,17 +274,11 @@ export function ChatProvider({
             error
           );
 
-          // For external sessions, don't show network errors if session doesn't exist
-          if (isExternalSession) {
-            console.log("ℹ️ [CHAT_PROVIDER] External session error (likely new session):", error);
-            // Don't show error toast for external sessions
-          } else {
-            // Show error toast to user
-            toast.error("Network error", {
-              description:
-                "Could not connect to load chat history. Please check your connection.",
-            });
-          }
+          // Show error toast to user
+          toast.error("Network error", {
+            description:
+              "Could not connect to load chat history. Please check your connection.",
+          });
 
           // On error, just clear state and continue (graceful degradation)
           setMessages([]);

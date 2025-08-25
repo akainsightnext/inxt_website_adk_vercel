@@ -109,55 +109,28 @@ export function useSession(): UseSessionReturn {
     }
   }, []);
 
-  // Check for external user/session from URL parameters
+  // Auto-create session on component mount
   useEffect(() => {
-    const checkExternalSession = () => {
-      if (typeof window !== 'undefined') {
-        const urlParams = new URLSearchParams(window.location.search);
-        const externalUser = urlParams.get('user');
-        const externalSession = urlParams.get('session');
-
-        if (externalUser && externalSession) {
-          const isExternalSession = urlParams.get('externalSession') === 'true';
-          console.log("🔗 External session detected:", { 
-            user: externalUser, 
-            session: externalSession, 
-            isExternal: isExternalSession 
-          });
-          setUserId(externalUser);
-          setSessionId(externalSession);
-          return true; // External session found
+    const autoCreateSession = async () => {
+      // Generate a default user ID if none exists
+      const defaultUserId = userId || `user-${Date.now()}`;
+      
+      if (!userId) {
+        setUserId(defaultUserId);
+      }
+      
+      // Create session if we don't have one
+      if (!sessionId && defaultUserId) {
+        try {
+          console.log("🔄 Auto-creating session for user:", defaultUserId);
+          await handleCreateNewSession(defaultUserId);
+        } catch (error) {
+          console.error("❌ Failed to auto-create session:", error);
         }
       }
-      return false; // No external session
     };
 
-    // Check for external session first
-    const hasExternalSession = checkExternalSession();
-    
-    // Only auto-create if no external session was found
-    if (!hasExternalSession) {
-      const autoCreateSession = async () => {
-        // Generate a default user ID if none exists
-        const defaultUserId = userId || `user-${Date.now()}`;
-        
-        if (!userId) {
-          setUserId(defaultUserId);
-        }
-        
-        // Create session if we don't have one
-        if (!sessionId && defaultUserId) {
-          try {
-            console.log("🔄 Auto-creating session for user:", defaultUserId);
-            await handleCreateNewSession(defaultUserId);
-          } catch (error) {
-            console.error("❌ Failed to auto-create session:", error);
-          }
-        }
-      };
-
-      autoCreateSession();
-    }
+    autoCreateSession();
   }, [userId, sessionId, handleCreateNewSession]);
 
   return {
