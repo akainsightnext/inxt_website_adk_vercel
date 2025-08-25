@@ -277,16 +277,82 @@ class JSONFragmentProcessor {
     // Try to parse any remaining buffer content
     if (this.buffer.trim()) {
       try {
-        const fragment: AgentEngineFragment = JSON.parse(this.buffer);
-        this.processCompleteFragment(fragment);
+        // Handle concatenated JSON objects from Agent Engine
+        // The buffer might contain multiple JSON objects back-to-back
+        const jsonObjects = this.splitConcatenatedJson(this.buffer);
+        
+        for (const jsonStr of jsonObjects) {
+          if (jsonStr.trim()) {
+            try {
+              const fragment: AgentEngineFragment = JSON.parse(jsonStr);
+              this.processCompleteFragment(fragment);
+            } catch (parseError) {
+              console.error(
+                "❌ [JSON PROCESSOR] Failed to parse individual JSON object:",
+                jsonStr.substring(0, 200) + "...",
+                parseError
+              );
+            }
+          }
+        }
       } catch (error) {
         console.error(
-          "❌ [JSON PROCESSOR] Failed to parse remaining buffer on finalize:",
-          this.buffer,
+          "❌ [JSON PROCESSOR] Failed to process remaining buffer on finalize:",
+          this.buffer.substring(0, 500) + "...",
           error
         );
       }
     }
+  }
+
+  /**
+   * Split concatenated JSON objects into individual JSON strings
+   * Agent Engine sometimes returns multiple JSON objects back-to-back
+   */
+  private splitConcatenatedJson(buffer: string): string[] {
+    const results: string[] = [];
+    let braceCount = 0;
+    let inString = false;
+    let escapeNext = false;
+    let jsonStart = -1;
+
+    for (let i = 0; i < buffer.length; i++) {
+      const char = buffer[i];
+
+      if (escapeNext) {
+        escapeNext = false;
+        continue;
+      }
+
+      if (char === '\\') {
+        escapeNext = true;
+        continue;
+      }
+
+      if (char === '"' && !escapeNext) {
+        inString = !inString;
+        continue;
+      }
+
+      if (!inString) {
+        if (char === '{') {
+          if (braceCount === 0) {
+            jsonStart = i;
+          }
+          braceCount++;
+        } else if (char === '}') {
+          braceCount--;
+          if (braceCount === 0 && jsonStart !== -1) {
+            // Found a complete JSON object
+            const jsonStr = buffer.substring(jsonStart, i + 1);
+            results.push(jsonStr);
+            jsonStart = -1;
+          }
+        }
+      }
+    }
+
+    return results;
   }
 }
 
