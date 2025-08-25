@@ -1,77 +1,68 @@
-from datetime import datetime, timezone
+"""
+InsightNext AI Assistant Agent
 
-import google.genai.types as genai_types
+An intelligent agent that helps potential customers discover how InsightNext 
+can transform their business through AI and data analytics solutions.
+"""
+
+import os
+from datetime import datetime, timezone
+from google.genai import types
 from google.adk.agents import LlmAgent
-from google.adk.planners import BuiltInPlanner
 
 from app.config import config
+from app.tools import rag_corpus_tools
+from app.prompts import get_agent_instructions, get_agent_global_instructions
 
-# --- ROOT AGENT DEFINITION ---
+# Disable telemetry to prevent serialization issues
+os.environ["ADK_DISABLE_TELEMETRY"] = "true"
+os.environ["GOOGLE_CLOUD_DISABLE_TELEMETRY"] = "true"
+os.environ["VERTEX_AI_DISABLE_TELEMETRY"] = "true"
+
+# Create the InsightNext AI Assistant Agent
 root_agent = LlmAgent(
-    name=config.internal_agent_name,
     model=config.model,
-    description="An intelligent agent that takes goals and breaks them down into actionable tasks and subtasks with built-in planning capabilities.",
-    planner=BuiltInPlanner(
-        thinking_config=genai_types.ThinkingConfig(include_thoughts=True)
+    name=config.internal_agent_name,
+    description="AI Assistant specialized in helping customers discover InsightNext's AI and data analytics solutions",
+    instruction=get_agent_instructions(),
+    tools=rag_corpus_tools,
+    generate_content_config=types.GenerateContentConfig(
+        temperature=0.1,  # Low temperature for more focused, professional responses
+        max_output_tokens=8192,  # Allow comprehensive responses about services
     ),
-    instruction=f"""
-    You are an intelligent goal planning and execution agent.
-    Your primary function is to take any user goal or request and systematically
-    break it down into concrete, actionable tasks and subtasks.
-
-    **Your Core Capabilities:**
-    1. **Goal Analysis**: Understand and analyze user goals, requests, or questions
-    2. **Task Decomposition**: Break down complex goals into logical, sequential tasks
-    3. **Subtask Creation**: Further decompose tasks into specific, actionable subtasks
-    4. **Planning & Execution**: Create detailed execution plans with clear steps
-    5. **Progress Tracking**: Monitor and report on task completion progress
-
-    **Your Planning Process:**
-    1. **Understand the Goal**: Carefully analyze what the user wants to achieve
-    2. **Break Down into Tasks**: Identify the main tasks needed to accomplish the goal
-    3. **Create Subtasks**: For each task, create specific, actionable subtasks
-    4. **Prioritize & Sequence**: Determine the optimal order of execution
-    5. **Execute & Monitor**: Work through the plan systematically
-    6. **Adapt & Refine**: Adjust the plan based on progress and feedback
-
-    **Task Creation Guidelines:**
-    - Tasks should be specific and measurable
-    - Include clear success criteria for each task
-    - Consider dependencies between tasks
-    - Estimate time/effort required
-    - Identify potential obstacles and mitigation strategies
-
-    **Response Format:**
-    When given a goal, structure your response as:
-
-    ## Goal Analysis
-    [Clear understanding of what the user wants to achieve]
-
-    ## Task Breakdown
-    ### Task 1: [Task Name]
-    - **Description**: [What needs to be done]
-    - **Subtasks**:
-      - [ ] Subtask 1.1: [Specific action]
-      - [ ] Subtask 1.2: [Specific action]
-    - **Success Criteria**: [How to know it's complete]
-    - **Dependencies**: [What needs to be done first]
-
-    ### Task 2: [Task Name]
-    [Similar format...]
-
-    ## Execution Plan
-    [Step-by-step plan with timeline and priorities]
-
-    ## Next Steps
-    [Immediate actions to take]
-
-    **Current Context:**
-    - Current date: {datetime.now(timezone.utc).strftime("%Y-%m-%d")}
-    - You have thinking capabilities enabled - use them to work through complex problems
-    - Always be thorough in your planning and consider multiple approaches
-    - Ask clarifying questions if the goal is ambiguous
-
-    Remember: Your strength is in systematic planning and breaking down complexity into manageable parts. Use your thinking process to ensure comprehensive and well-structured plans.
-    """,
-    output_key="goal_plan",
 )
+
+# Agent metadata for reference
+AGENT_METADATA = {
+    "name": "InsightNext AI Assistant",
+    "description": "AI Agent specialized in helping customers discover InsightNext's AI and data analytics solutions",
+    "website": "https://www.insightnext.tech",
+    "version": "1.0.0",
+    "capabilities": [
+        "Service information and consultation",
+        "Business solution recommendations",
+        "Technical capability explanations",
+        "Implementation methodology guidance",
+        "Customer engagement and lead qualification"
+    ],
+    "tools": [tool.name for tool in rag_corpus_tools],
+    "last_updated": datetime.now(timezone.utc).strftime("%Y-%m-%d")
+}
+
+def get_agent_info():
+    """Get information about the agent."""
+    return AGENT_METADATA
+
+def get_agent():
+    """Get the configured agent instance."""
+    return root_agent
+
+# For direct execution
+if __name__ == "__main__":
+    print("🌟 InsightNext AI Assistant")
+    print(f"📅 Last Updated: {AGENT_METADATA['last_updated']}")
+    print(f"🌐 Website: {AGENT_METADATA['website']}")
+    print(f"🔧 Model: {config.model}")
+    print(f"🛠️  Tools available: {len(AGENT_METADATA['tools'])}")
+    print(f"📋 Capabilities: {', '.join(AGENT_METADATA['capabilities'])}")
+    print("\n🚀 Agent is ready to help customers discover InsightNext solutions!")
