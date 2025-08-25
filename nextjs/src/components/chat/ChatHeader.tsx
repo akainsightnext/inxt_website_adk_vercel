@@ -26,9 +26,9 @@ export function ChatHeader(): React.JSX.Element {
             <Bot className="h-4 w-4 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-slate-100">
-              AI Chat Assistant
-            </h1>
+                                   <h1 className="text-lg font-semibold text-slate-100">
+                         Ava
+                       </h1>
             <p className="text-xs text-slate-400">Auto-session enabled • Powered by Vertex AI</p>
           </div>
         </div>
