@@ -41,7 +41,7 @@ export function MessageList({
     if (isLoading) {
       const scrollInterval = setInterval(() => {
         scrollToBottom();
-      }, 100); // Scroll every 100ms during streaming
+      }, 500); // Scroll every 500ms during streaming
 
       return () => clearInterval(scrollInterval);
     }

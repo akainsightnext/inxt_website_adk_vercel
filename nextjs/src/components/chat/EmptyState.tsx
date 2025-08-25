@@ -42,7 +42,7 @@ export function EmptyState(): React.JSX.Element {
         });
       };
 
-      const scrollInterval = setInterval(scrollToBottom, 100);
+      const scrollInterval = setInterval(scrollToBottom, 500);
       return () => clearInterval(scrollInterval);
     }
   }, [isTyping]);
