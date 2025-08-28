@@ -12,7 +12,7 @@ export function EmptyState(): React.JSX.Element {
   const [welcomeText, setWelcomeText] = useState("");
   const [isTyping, setIsTyping] = useState(true);
   
-  const fullWelcomeText = "Hi there! 👋 I'm Ava, your AI assistant, ready to help you discover how our AI and data analytics solutions can transform your business. What can I help you with today? 🚀";
+  const fullWelcomeText = "Hi there! 👋 I'm Nex, your AI assistant, ready to help you discover how our AI and data analytics solutions can transform your business. What can I help you with today? 🚀";
 
   useEffect(() => {
     let currentIndex = 0;
@@ -56,7 +56,7 @@ export function EmptyState(): React.JSX.Element {
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-md">
               <Target className="w-4 h-4 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Ava</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Nex</h1>
           </div>
         </div>
 

@@ -27,7 +27,7 @@ export function ChatHeader(): React.JSX.Element {
           </div>
           <div>
                                    <h1 className="text-lg font-semibold text-slate-100">
-                         Ava
+                         Nex
                        </h1>
             <p className="text-xs text-slate-400">Auto-session enabled • Powered by Vertex AI</p>
           </div>

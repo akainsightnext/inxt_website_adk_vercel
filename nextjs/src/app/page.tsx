@@ -4,7 +4,7 @@ import { ChatContainer } from "@/components/chat/ChatContainer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Ava - AI Chat",
+  title: "Nex - AI Chat",
   description: "Get instant answers about InsightNext's AI and data analytics solutions",
 };
 
