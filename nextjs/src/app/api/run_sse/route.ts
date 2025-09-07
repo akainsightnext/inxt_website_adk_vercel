@@ -59,7 +59,7 @@ export async function POST(request: NextRequest): Promise<Response> {
                   role: "model"
                 },
                 blocked: true,
-                safetyDetails: promptSafety.details,
+                safetyDetails: promptSafety?.details || {},
                 timestamp: Date.now() / 1000
               };
               
