@@ -11,7 +11,7 @@ import {
 } from "@/lib/handlers/error-utils";
 import { handleAgentEngineStreamRequest } from "@/lib/handlers/run-sse-agent-engine-handler";
 import { handleLocalBackendStreamRequest } from "@/lib/handlers/run-sse-local-backend-handler";
-import { ModelArmorClient } from "@/lib/model-armor-client";
+import { ModelArmorClient, SafetyResult } from "@/lib/model-armor-client";
 import { getTemplates, isModelArmorEnabled } from "@/app/api/model-armor/config";
 
 // Configure maximum execution duration (5 minutes = 300 seconds)
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Model Armor: Sanitize user input before processing
     let sanitizedMessage = requestData.message;
-    let promptSafety = null;
+    let promptSafety: SafetyResult | null = null;
     
     if (isModelArmorEnabled()) {
       try {
