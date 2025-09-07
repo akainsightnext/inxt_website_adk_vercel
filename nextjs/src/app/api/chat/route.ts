@@ -253,7 +253,7 @@ async function collectStreamingResponse(response: Response): Promise<string> {
   }
 
   // Return the accumulated text or the last complete response
-  return fullText || (lastValidJson?.content as any)?.parts?.[0]?.text || 'No response generated';
+  return fullText || (lastValidJson?.content as { parts?: Array<{ text?: string }> })?.parts?.[0]?.text || 'No response generated';
 }
 
 /**
