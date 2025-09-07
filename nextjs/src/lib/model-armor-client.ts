@@ -38,7 +38,7 @@ export interface SafetyResult {
   matchState: number;
   sanitizedText?: string;
   details: SafetyDetails;
-  rawResponse?: Record<string, unknown>;
+  rawResponse?: ModelArmorApiResponse | Record<string, unknown>;
 }
 
 export interface SafetyDetails {
