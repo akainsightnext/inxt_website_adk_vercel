@@ -129,16 +129,16 @@ export class ModelArmorClient {
   }
   
   private parseResponse(apiResponse: Record<string, unknown>, originalText: string): SafetyResult {
-    const sanitizationResult = apiResponse.sanitizationResult;
-    const filterMatchState = sanitizationResult.filterMatchState;
+    const sanitizationResult = apiResponse.sanitizationResult as Record<string, unknown>;
+    const filterMatchState = sanitizationResult.filterMatchState as number;
     const isBlocked = filterMatchState === 2;
     
     // Extract sanitized/deidentified text
     let sanitizedText = originalText;
-    const filterResults = sanitizationResult.filterResults || {};
+    const filterResults = (sanitizationResult.filterResults as Record<string, unknown>) || {};
     
-    if (filterResults.sdp?.sdpFilterResult?.deidentifyResult?.data?.text) {
-      sanitizedText = filterResults.sdp.sdpFilterResult.deidentifyResult.data.text;
+    if ((filterResults.sdp as any)?.sdpFilterResult?.deidentifyResult?.data?.text) {
+      sanitizedText = (filterResults.sdp as any).sdpFilterResult.deidentifyResult.data.text;
     }
     
     return {
@@ -156,10 +156,10 @@ export class ModelArmorClient {
     
     // Sensitive Data Protection
     if (filterResults.sdp) {
-      const sdpResult = filterResults.sdp.sdpFilterResult;
-      if (sdpResult.inspectResult) {
+      const sdpResult = (filterResults.sdp as any).sdpFilterResult;
+      if (sdpResult?.inspectResult) {
         details.sensitiveData = this.getMatchStateMessage(sdpResult.inspectResult.matchState);
-      } else if (sdpResult.deidentifyResult) {
+      } else if (sdpResult?.deidentifyResult) {
         details.sensitiveData = this.getMatchStateMessage(sdpResult.deidentifyResult.matchState);
       }
     }
@@ -167,24 +167,24 @@ export class ModelArmorClient {
     // Prompt Injection and Jailbreak
     if (filterResults.piAndJailbreak) {
       details.promptInjection = this.getMatchStateMessage(
-        filterResults.piAndJailbreak.piAndJailbreakFilterResult.matchState
+        (filterResults.piAndJailbreak as any).piAndJailbreakFilterResult?.matchState
       );
     }
     
     // Malicious URIs
     if (filterResults.maliciousUris) {
       details.maliciousUrls = this.getMatchStateMessage(
-        filterResults.maliciousUris.maliciousUriFilterResult.matchState
+        (filterResults.maliciousUris as any).maliciousUriFilterResult?.matchState
       );
     }
     
     // Responsible AI
     if (filterResults.rai) {
-      const raiResult = filterResults.rai.raiFilterResult;
-      const raiTypes = raiResult.raiFilterTypeResults || {};
+      const raiResult = (filterResults.rai as any).raiFilterResult;
+      const raiTypes = raiResult?.raiFilterTypeResults || {};
       
       details.responsibleAI = {
-        overall: this.getMatchStateMessage(raiResult.matchState),
+        overall: this.getMatchStateMessage(raiResult?.matchState),
         sexuallyExplicit: this.getMatchStateMessage(raiTypes.sexuallyExplicit?.matchState || 0),
         hateSpeech: this.getMatchStateMessage(raiTypes.hateSpeech?.matchState || 0),
         harassment: this.getMatchStateMessage(raiTypes.harassment?.matchState || 0),
