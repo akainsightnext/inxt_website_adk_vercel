@@ -11,6 +11,8 @@ import {
 } from "@/lib/handlers/error-utils";
 import { handleAgentEngineStreamRequest } from "@/lib/handlers/run-sse-agent-engine-handler";
 import { handleLocalBackendStreamRequest } from "@/lib/handlers/run-sse-local-backend-handler";
+import { ModelArmorClient } from "@/lib/model-armor-client";
+import { getTemplates, isModelArmorEnabled } from "@/app/api/model-armor/config";
 
 // Configure maximum execution duration (5 minutes = 300 seconds)
 export const maxDuration = 300;
@@ -33,6 +35,65 @@ export async function POST(request: NextRequest): Promise<Response> {
       );
     }
 
+    // Model Armor: Sanitize user input before processing
+    let sanitizedMessage = requestData.message;
+    let promptSafety = null;
+    
+    if (isModelArmorEnabled()) {
+      try {
+        const modelArmorClient = new ModelArmorClient();
+        const templates = getTemplates('balanced'); // Use balanced profile by default
+        
+        promptSafety = await modelArmorClient.sanitizePrompt(requestData.message, templates.prompt);
+        
+        if (promptSafety.blocked) {
+          // Return blocked response as SSE stream
+          const encoder = new TextEncoder();
+          const stream = new ReadableStream({
+            start(controller) {
+              const blockedResponse = {
+                content: {
+                  parts: [{ 
+                    text: "I cannot process that request due to safety concerns. Please rephrase your question in a more appropriate manner." 
+                  }],
+                  role: "model"
+                },
+                blocked: true,
+                safetyDetails: promptSafety.details,
+                timestamp: Date.now() / 1000
+              };
+              
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify(blockedResponse)}\n\n`));
+              controller.close();
+            }
+          });
+
+          return new Response(stream, {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/plain; charset=utf-8',
+              'Cache-Control': 'no-cache',
+              'Connection': 'keep-alive',
+              ...CORS_HEADERS,
+            },
+          });
+        }
+        
+        // Use sanitized text if available
+        sanitizedMessage = promptSafety.sanitizedText || requestData.message;
+        
+      } catch (modelArmorError) {
+        console.error('Model Armor error:', modelArmorError);
+        // Continue with original message if Model Armor fails (fail-open approach)
+      }
+    }
+
+    // Update request data with sanitized message
+    const sanitizedRequestData = {
+      ...requestData,
+      message: sanitizedMessage
+    };
+
     // Determine deployment strategy based on configuration
     const deploymentType = shouldUseAgentEngine()
       ? "agent_engine"
@@ -40,17 +101,17 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Log the incoming request with deployment strategy
     logStreamRequest(
-      requestData.sessionId,
-      requestData.userId,
-      requestData.message,
+      sanitizedRequestData.sessionId,
+      sanitizedRequestData.userId,
+      sanitizedRequestData.message,
       deploymentType
     );
 
     // Delegate to appropriate deployment strategy handler
     if (deploymentType === "agent_engine") {
-      return await handleAgentEngineStreamRequest(requestData);
+      return await handleAgentEngineStreamRequest(sanitizedRequestData);
     } else {
-      return await handleLocalBackendStreamRequest(requestData);
+      return await handleLocalBackendStreamRequest(sanitizedRequestData);
     }
   } catch (error) {
     // Handle any unexpected errors at the top level
