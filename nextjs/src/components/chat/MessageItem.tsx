@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { MarkdownRenderer, mdComponents } from "./MarkdownRenderer";
 
-import { Copy, CopyCheck, Loader2, Bot, User, Target } from "lucide-react";
+import { Copy, CopyCheck, Loader2, User, Target } from "lucide-react";
 import { Message } from "@/types";
 
 interface MessageItemProps {

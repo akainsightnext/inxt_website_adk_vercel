@@ -6,7 +6,7 @@ export interface SafetyResult {
   matchState: number;
   sanitizedText?: string;
   details: SafetyDetails;
-  rawResponse?: any;
+  rawResponse?: Record<string, unknown>;
 }
 
 export interface SafetyDetails {
@@ -128,7 +128,7 @@ export class ModelArmorClient {
     }
   }
   
-  private parseResponse(apiResponse: any, originalText: string): SafetyResult {
+  private parseResponse(apiResponse: Record<string, unknown>, originalText: string): SafetyResult {
     const sanitizationResult = apiResponse.sanitizationResult;
     const filterMatchState = sanitizationResult.filterMatchState;
     const isBlocked = filterMatchState === 2;
@@ -151,7 +151,7 @@ export class ModelArmorClient {
     };
   }
   
-  private parseDetails(filterResults: any): SafetyDetails {
+  private parseDetails(filterResults: Record<string, unknown>): SafetyDetails {
     const details: SafetyDetails = {};
     
     // Sensitive Data Protection

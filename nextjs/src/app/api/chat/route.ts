@@ -215,7 +215,7 @@ async function collectStreamingResponse(response: Response): Promise<string> {
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let fullText = '';
-  let lastValidJson: any = null;
+  let lastValidJson: Record<string, unknown> | null = null;
 
   try {
     while (true) {
@@ -241,7 +241,7 @@ async function collectStreamingResponse(response: Response): Promise<string> {
                 fullText = newText;
               }
             }
-          } catch (parseError) {
+          } catch {
             // Skip invalid JSON lines
             console.warn('Failed to parse SSE line:', line);
           }

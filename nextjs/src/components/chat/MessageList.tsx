@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { MessageItem } from "./MessageItem";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bot, Loader2, Target } from "lucide-react";
+import { Loader2, Target } from "lucide-react";
 import { Message } from "@/types";
 
 interface MessageListProps {
